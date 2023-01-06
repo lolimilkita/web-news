@@ -12,14 +12,15 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::with('writer:id,username')->get();
+        $posts = Post::all();
 
-        return PostDetailResource::collection($posts);
+        return PostDetailResource::collection($posts->loadMissing(['writer:id,username', 'comments:id,post_id,user_id,comments_content,created_at']));
     }
 
     public function show($id)
     {
         $post = Post::with('writer:id,username')->findOrFail($id);
+
         return new PostDetailResource($post);
     }
 
@@ -33,7 +34,7 @@ class PostController extends Controller
         $request['author'] = Auth::user()->id;
         $post = Post::create($request->all());
 
-        return new PostDetailResource($post->loadMissing('writer:id,username'));
+        return new PostDetailResource($post->loadMissing(['writer:id,username']));
     }
 
     public function update(Request $request, $id)

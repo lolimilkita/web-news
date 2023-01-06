@@ -6,12 +6,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class PostDetailResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
-     */
     public function toArray($request)
     {
         return [
@@ -21,6 +15,10 @@ class PostDetailResource extends JsonResource
             'created_at' => date_format($this->created_at, "Y/m/d"),
             'author' => $this->author,
             'writer' => $this->whenLoaded('writer'),
+            'comments' => $this->whenLoaded('comments', CommentResource::collection($this->comments->loadMissing(['author:id,username,firstname,lastname']))),
+            'comment_total' => $this->whenLoaded('comments', function () {
+                return $this->comments->count();
+            }),
         ];
     }
 }
