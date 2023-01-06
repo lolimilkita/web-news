@@ -25,6 +25,6 @@ class LoginController extends Controller
             ]);
         }
 
-        return $user->createToken('user token')->plainTextToken;
+        return response()->json(['token' => $user->createToken('user token')->plainTextToken]);
     }
 }
